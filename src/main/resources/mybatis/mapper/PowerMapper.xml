@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PowerMapper">
+    <select id="findallPower" resultType="Power">
+        select *from power_grid;
+    </select>
+
+    <select id="findpower_namebyID" resultType="String">
+        select power_name from power_grid where power_ID = ${power_ID}
+    </select>
+    <select id="findnextpower_ID" resultType="int">
+        SELECT power_ID+1 FROM power_grid  ORDER BY power_ID DESC LIMIT 1;
+    </select>
+    <insert id="addapower">
+        insert into power_grid(`power_name`,`parent_ID`) values (#{power_name},${parent_ID})
+    </insert>
+    <delete id="deletepower_byID">
+        delete from power_grid where power_ID = ${power_ID};
+    </delete>
+    <select id="findpowerbyID" resultType="Power">
+        select *from power_grid where power_ID = ${power_ID}
+    </select>
+    <update id="updataparent_ID">
+        update power_grid set parent_ID = ${new_parent_ID} where power_ID = ${power_ID}
+    </update>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.Power_sensorMapper">
+    <select id="findpower_sensorbypower" resultType="power_sensor">
+        select * from power_sensor where power_ID = ${power_ID}
+    </select>
+    <insert id="insertpower_sensor" >
+        insert into power_sensor(`power_ID`,`sensor_ID`) values (${power_ID},${sensor_ID})
+    </insert>
+    <delete id="deletepower_sensor">
+        delete from power_sensor where power_ID = ${power_ID} and sensor_ID = ${sensor_ID}
+    </delete>
+    <select id="findallpower_sensor" resultType="Power_sensor">
+        select *from power_sensor
+    </select>
+</mapper>

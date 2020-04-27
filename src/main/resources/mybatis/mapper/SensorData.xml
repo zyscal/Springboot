@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.Sensor_DataMapper">
+
+    <select id="findadata" resultType="Sensor_Data">
+        SELECT * FROM ${sensor_name} ORDER BY Sensor_time DESC LIMIT 1;
+    </select>
+
+    <select id="findalldata" resultType="Sensor_Data" parameterType="String">
+        select * from ${table_name}
+    </select>
+    
+    <insert id="addSensorData">
+        insert into ${table_name}(Sensor_data) values (${sensor_data})
+    </insert>
+    <update id="createatable">
+        CREATE TABLE ${table_name}(Sensor_data FLOAT,Sensor_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+    </update>
+
+
+</mapper>

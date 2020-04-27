@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.STM32Mapper">
+    <select id="querySTM32List" resultType="STM32">
+        select *from stm32
+    </select>
+
+    <select id="findSTM32byIP" parameterType="String" resultType="STM32">
+        SELECT * FROM stm32 WHERE stm32_IPv6 = #{stm32_IPv6}
+    </select>
+
+    <insert id="insertaSTM32" parameterType="STM32">
+        INSERT INTO `springboot`.`stm32` (`stm32_IPv6`,`stm32_name`, `router_IPv6`,`state`, `sensor_num`,`power_ID`)
+        VALUES (#{stm32_IPv6},#{stm32_name},#{router_IPv6},#{state},#{sensor_num},#{power_ID})
+    </insert>
+
+    <select id="numofSTM32" resultType="int">
+        SELECT COUNT(*) FROM stm32 WHERE router_IPv6 = #{router_IPv6}
+    </select>
+
+    <select id="listofSTM32byRouter" resultType="STM32">
+        select *from stm32 where router_IPv6 = #{router_IPv6};
+    </select>
+
+    <select id="findsensorbySTM32" resultType="STM32">
+        select *from sensor where stm32_IPv6 = #{stm32_IPv6}
+    </select>
+    <update id="updateSTM32" >
+        UPDATE stm32 SET stm32.stm32_name = #{stm32_name},stm32.power_ID = ${power_ID} WHERE stm32.stm32_IPv6 = #{stm32_IPv6}
+    </update>
+
+    <delete id="deleteSTM32">
+        DELETE FROM stm32 WHERE stm32_IPv6 = #{stm32_IPv6}
+    </delete>
+
+    <select id="findSTM32namebyIP" resultType="String">
+        select stm32_name from stm32 where stm32_IPv6 = #{stm32_IPv6}
+    </select>
+</mapper>

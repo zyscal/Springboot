@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<script type="text/javascript" th:src="@{/static/three.js}"></script>
+    <title>My first three.js app</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<script>
+    var websocket = null;
+    if ('WebSocket' in window) {
+        websocket = new WebSocket("ws://localhost:8181/websocket");
+    }
+    else {
+        alert('当前浏览器 Not support websocket')
+    }
+    //连接发生错误的回调方法
+    websocket.onerror = function () {
+        setMessageInnerHTML("WebSocket连接发生错误");
+    };
+
+    //连接成功建立的回调方法
+    websocket.onopen = function () {
+        setMessageInnerHTML("WebSocket连接成功");
+    }
+    console.log("after onopen\n");
+
+    //发送消息
+    function send() {
+        var message = document.getElementById('text').value;
+        websocket.send(message);
+    }
+    //将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+    console.log("after setmessage\n");
+
+    //连接关闭的回调方法
+    websocket.onclose = function () {
+        setMessageInnerHTML("WebSocket连接关闭");
+    }
+    console.log("after onclose\n");
+    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+    window.onbeforeunload = function () {
+        closeWebSocket();
+    }
+    console.log("after onbeforeunload\n");
+    //关闭WebSocket连接
+    function closeWebSocket() {
+        websocket.close();
+    }
+    console.log("after closeweb\n");
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+    //var geometry = new THREE.BoxGeometry(0.97, 0.65, 0.16);
+    var bei = 3;
+    var geometry = new THREE.BoxGeometry( 0.65 * bei, 0.16 * bei, 0.97 * bei);
+    var mats=[];
+    var material;
+    for(var i = 0;i < geometry.faces.length;i++)
+    {
+        switch (i) {
+            case 0:
+                material = new THREE.MeshBasicMaterial({color:0xffffff});//白色
+                mats.push(material);
+                break;
+            case 1:
+                material = new THREE.MeshBasicMaterial({color:0xff0000});//红色
+                mats.push(material);
+                break;
+            case 2:
+                material = new THREE.MeshBasicMaterial({color:0x0000ff});//蓝色
+                mats.push(material);
+                break;
+            case 3:
+                material = new THREE.MeshBasicMaterial({color:0xff6100});//橙色
+                mats.push(material);
+                break;
+            case 4:
+                material = new THREE.MeshBasicMaterial({color:0x00ff00});//绿色
+                mats.push(material);
+                break;
+            case 5:
+                material = new THREE.MeshBasicMaterial({color:0xffff00});//黄色
+                mats.push(material);
+                break;
+            default:
+                material = new THREE.MeshBasicMaterial({ color: new THREE.Color(Math.random() * 0xffffff)});// 随机颜色
+                mats.push(material);
+                break;
+        }
+    }
+
+    var cube = new THREE.Mesh( geometry, mats );
+    scene.add( cube );
+
+    camera.position.z = 5;
+
+    //接收到消息的回调方法
+    cube.rotation.x =0
+    cube.rotation.y =0
+    websocket.onmessage = function (event) {
+
+        var dataall = String(event.data).split(" ");
+        var datax = dataall[0];
+        var datay = dataall[1];
+        // console.log("x:"+datax);
+        // console.log("y"+datay);
+        // cube.rotation.x = 3.14/2;
+        // cube.rotation.y = 0;
+
+        console.log("x:"+Number(datax)+"y:"+Number(datay));
+        cube.rotation.z = Number(datax)*3.14/180;
+        cube.rotation.y = 0;//是横的
+        cube.rotation.x = -Number(datay)*3.14/180;
+        console.log("x1:"+cube.rotation.x +"y1:"+cube.rotation.z);
+
+    }
+    console.log("after onmessage\n");
+
+    var animate = function () {
+        requestAnimationFrame( animate );
+
+        // cube.rotation.x = [[${rotationx}]];
+
+        // cube.rotation.x += 0.1;
+        // cube.rotation.y += 0.1;
+       // cube.rotation.y += 0.1;
+        renderer.render( scene, camera );
+    };
+    console.log("animate");
+    animate();
+
+</script>
+
+<button th:onmousedown="onclick()">FFFFFFFFFFFFF</button>
+<b th:id="text">12313212313131313</b>
+<b th:id="message"></b>
+</body>
+</html>
+
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>test STM32rotate</title>-->
+<!--    <script type="text/javascript" th:src="@{/static/body/html/echarts.min.js}"></script>-->
+<!--    <script type="text/javascript" th:src="@{/static/body/html/jquery.js}"></script>-->
+<!--    <style>-->
+
+<!--        html,body{height: 100%;width: 100%;}-->
+<!--        div,b{-->
+<!--            position: absolute;-->
+<!--            transform-style: preserve-3d;-->
+<!--            display: block;-->
+<!--        }-->
+
+<!--        #STM3d{-->
+<!--            width:400px;-->
+<!--            height:400px;-->
+<!--            background: red;-->
+<!--            margin: auto;-->
+<!--            top :0;right: 0;left: 0;bottom: 0;-->
+<!--            border: 10px solid #0f0f0f;-->
+<!--            transform: rotateX()rotateY(0deg)rotateZ(-206deg);-->
+
+<!--        }-->
+<!--        #STM3d b{-->
+<!--            height: 100%;-->
+<!--            width: 100%;-->
+<!--            background: #00aced;-->
+<!--            transform: rotateX(90deg)rotateY(0deg)rotateZ(0deg);-->
+<!--            transform-origin: 0 0;-->
+<!--        }-->
+<!--        #STM3d b > b{-->
+<!--            height: 100%;-->
+<!--            width: 100%;-->
+<!--            background: #3e8f3e;-->
+<!--            transform: rotateX(0deg)rotateY(90deg)rotateZ(0deg);-->
+<!--            transform-origin: 0 0;-->
+<!--        }-->
+<!--        #STM3d b > b > b{-->
+<!--            height: 100%;-->
+<!--            width: 100%;-->
+<!--            background: #4cae4c;-->
+<!--            transform: rotateX(0deg)rotateY(90deg)rotateZ(0deg);-->
+<!--            transform-origin: 100% 0;-->
+<!--        }-->
+
+<!--        #STM3d b > b > b >b{-->
+<!--            height: 100%;-->
+<!--            width: 100%;-->
+<!--            background: #721c24;-->
+<!--            transform: rotateX(0deg)rotateY(90deg)rotateZ(0deg);-->
+<!--            transform-origin: 0 0;-->
+<!--        }-->
+<!--        #top{-->
+<!--            width:400px;-->
+<!--            height:400px;-->
+<!--            background: #02bec9;-->
+<!--            transform-origin: 0 30px;-->
+<!--            transform: rotateX(-90deg)rotateY(0deg)rotateZ(0deg);-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <div  id="STM3d" >-->
+<!--        <div style="height:30px;width: 100%; top :0px ;left: 0px ;">-->
+<!--            <b>-->
+<!--                <div id="top"></div>-->
+<!--                <b>-->
+<!--                    <b>-->
+<!--                        <b>-->
+<!--                        </b>-->
+<!--                    </b>-->
+<!--                </b>-->
+<!--            </b>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--</body>-->

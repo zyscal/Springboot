@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.RouterMapper">
+    <select id="listofRouter" resultType="Router">
+        select * from router
+    </select>
+
+    <select id="listofRouter_IPv6" resultType="String">
+        select router.router_IPv6 from router
+    </select>
+
+
+    <select id="total_terminal" parameterType="Router" resultType="int">
+        SELECT COUNT(*) FROM stm32 WHERE stm32.router_IPv6 = #{router_IPv6};
+    </select>
+
+    <select id="online" parameterType="Router" resultType="int">
+        SELECT COUNT(*) FROM stm32 WHERE stm32.router_IPv6 = #{router_IPv6} AND state = 1;
+    </select>
+
+    <insert id="addRouter" parameterType="Router">
+        INSERT INTO router (router_IPv6,router_name) VALUES(#{router_IPv6},#{router_name})
+    </insert>
+    <delete id="deleteRouterbyIPv6" parameterType="Router">
+        delete from router where router_IPv6 = #{router_IPv6}
+    </delete>
+    <update id="updateRouter" parameterType="Router">
+        update router set router_name = #{router_name} where router_IPv6 = #{router_IPv6}
+    </update>
+
+    <update id="updateRouterTotal_terminal" parameterType="String">
+        UPDATE router SET total_terminal = total_terminal + 1 WHERE router_IPv6 = #{router_IPv6}
+    </update>
+
+    <select id="numofRouter" resultType="int">
+        SELECT COUNT(*) FROM router
+    </select>
+</mapper>
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.SensorMapper">
+    <select id="findIDbyIPandtypeand_stm32sensorID" resultType="int"  parameterType="Sensor">
+        SELECT sensor.sensor_ID FROM sensor WHERE sensor.stm32_IPv6 = #{stm32_IPv6} AND sensor.type_ID = ${type_ID} AND sensor.stm32_sensor_ID = ${stm32_sensor_ID};
+
+    </select>
+    <insert id="addasensor" parameterType="Sensor">
+        INSERT INTO `springboot`.`sensor` (`stm32_IPv6`,`type_ID`, `sensor_state`,`sensor_name`)
+        VALUES(#{stm32_IPv6},#{type_ID},${sensor_state},#{sensor_name})
+    </insert>
+    <insert id="insertsensor" parameterType="Sensor">
+        INSERT INTO `springboot`.`sensor` (`stm32_IPv6`,`type_ID`, `sensor_state`,`sensor_name`,`stm32_sensor_ID`)
+        VALUES(#{stm32_IPv6},#{type_ID},${sensor_state},#{sensor_name},${stm32_sensor_ID})
+    </insert>
+
+
+    <select id="findsensorbySTM32" resultType="Sensor" parameterType="String">
+        select * from sensor where sensor.stm32_IPv6 = #{stm32_IPv6}
+    </select>
+
+    <select id="findtype_namebyid" resultType="String">
+        select  type_name from sensor_type where type_ID = ${id}
+    </select>
+
+    <select id="findsensorbypage" resultType="Sensor">
+        select * from sensor  LIMIT ${page},8
+    </select>
+
+    <delete id="deleteSensor">
+        delete from sensor where sensor_ID = ${sensor_ID}
+    </delete>
+    <update id="updateSensor">
+        update sensor set sensor_name = #{sensor_name} where sensor_ID = ${sensor_ID}
+    </update>
+    
+    <select id="findallsensor" resultType="Sensor">
+        select * from sensor
+    </select>
+
+    <select id="findsensor_namebyid" resultType="String">
+        select sensor_name from sensor where sensor_ID = ${sensor_ID}
+    </select>
+</mapper>
+
