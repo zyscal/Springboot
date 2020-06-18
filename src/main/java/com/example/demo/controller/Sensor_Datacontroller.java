@@ -129,8 +129,8 @@ public class Sensor_Datacontroller {
         return sensor_dataList;
     }
 
-    @RequestMapping(value = "/Sensor_Data/{STM32_IPv6}/{type}",method = RequestMethod.GET)//拿所有1281Temp
-    public List<Sensor_Data> findall1281BTemp(@PathVariable String STM32_IPv6,@PathVariable String type){
+    @RequestMapping(value = "/Sensor_Data/{STM32_IPv6}/{type}/{date}",method = RequestMethod.GET)//拿所有1281Temp
+    public List<Sensor_Data> findall1281BTemp(@PathVariable String STM32_IPv6,@PathVariable String type,@PathVariable String date){
         Sensor sensor;
         switch (type){
             case "all1281BTemp":
@@ -165,8 +165,16 @@ public class Sensor_Datacontroller {
         }
         String table_name = "sensor_"+findsensorid;
         System.out.println(table_name);
-        List<Sensor_Data> alldata = sensor_dataMapper.findalldata(table_name);
-        return alldata;
+        if(date.equals("null")){
+            List<Sensor_Data> alldata = sensor_dataMapper.findalldata(table_name);
+            return alldata;
+        }else{
+            String onedate = date + "%";
+            List<Sensor_Data> alldata = sensor_dataMapper.findalldatabydate(table_name,onedate);
+            return alldata;
+        }
+
+
     }
 //    @RequestMapping(value = "/Sensor_Data/{STM32_IPv6}/all680Temp",method = RequestMethod.GET)//拿所有1281Temp
 //    public List<Sensor_Data> findall680Temp(@PathVariable String STM32_IPv6){

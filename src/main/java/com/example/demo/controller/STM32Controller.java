@@ -32,7 +32,7 @@ public class STM32Controller {
     }
     @GetMapping("/testconnect24")
     public String testconnect24() throws IOException {
-        InetAddress address = InetAddress.getByName("2001:db8::24");
+        InetAddress address = InetAddress.getByName("2001:db5::204:a3ff:fe10:24");
         if(address.isReachable(500)){
             System.out.println("SUCCESS");
             return "SUCCESS";

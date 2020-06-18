@@ -18,6 +18,8 @@
     <update id="createatable">
         CREATE TABLE ${table_name}(Sensor_data FLOAT,Sensor_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
     </update>
-
+    <select id="findalldatabydate" resultType="Sensor_Data" >
+        SELECT * FROM ${table_name} WHERE Sensor_time LIKE #{date}
+    </select>
 
 </mapper>

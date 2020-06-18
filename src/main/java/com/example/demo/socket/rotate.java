@@ -38,7 +38,7 @@ public class rotate {
     private final int PORT = 16415;
     private DatagramSocket datagramSocket;
     private HashSet<String> processing_1281BCurrent;
-
+    private CoapServer server;
     private boolean runornot = false;
     /////////////////0310
 
@@ -82,12 +82,13 @@ public class rotate {
          * 4.数据类型设备内id 值
          *
          */
-        CoapServer server = new CoapServer();
-        server.addEndpoint(new CoapEndpoint(new InetSocketAddress(Inet6Address.getByName("2001:db8::25"), 5683)));
+        this.server = new CoapServer();
+//        server.addEndpoint(new CoapEndpoint(new InetSocketAddress(Inet6Address.getByName("2001:db8::25"), 5683)));
+        server.addEndpoint(new CoapEndpoint(new InetSocketAddress(Inet6Address.getByName("2001:db5::240e:c402:3a03:953f"), 5683)));
         server.add(new CoapResource("register"){
             @Override
-            public void handlePOST(CoapExchange exchange){// 3 1_0 2_0 3_0
-                System.out.println(exchange.getRequestText());
+            public void handlePOST(CoapExchange exchange){// 5 1_0 2_0 4_0 5_0 7_0
+//                System.out.println(exchange.getRequestText());
                 String stm32_IPv6 = exchange.getSourceAddress().toString().split("/")[1];//拿到设备IP
                 int numofsensor = findnumofsensor(exchange.getRequestText().toString());
                 String router_IPv6 = new String();
@@ -248,7 +249,7 @@ public class rotate {
 
             @Override
             public void handlePOST(CoapExchange exchange){
-                System.out.println("exchange:"+exchange.getRequestText());
+//                System.out.println("exchange:"+exchange.getRequestText());
                 String xandy = exchange.getRequestText();
 
 
@@ -278,25 +279,74 @@ public class rotate {
                 }
 
 
-                for(int i = 0;i<rotatedata.Jitter_coefficient;i++)
-                {
-                    if(rotatedata.getridofJitterx[i] < 100){
-                        rotatedata.datax += (360 + rotatedata.getridofJitterx[i]);
-                    }else{
-                        rotatedata.datax += rotatedata.getridofJitterx[i];
-                    }
-                    if(rotatedata.getridofJittery[i] < 100){
-                        rotatedata.datay += (360 + rotatedata.getridofJittery[i]);
-                    }else{
-                        rotatedata.datay += rotatedata.getridofJittery[i];
-                    }
+//                for(int i = 0;i<rotatedata.Jitter_coefficient;i++)
+//                {
+//                    if(rotatedata.getridofJitterx[i] < 100){
+//                        rotatedata.datax += (360 + rotatedata.getridofJitterx[i]);
+//                    }else{
+//                        rotatedata.datax += rotatedata.getridofJitterx[i];
+//                    }
+//                    if(rotatedata.getridofJittery[i] < 100){
+//                        rotatedata.datay += (360 + rotatedata.getridofJittery[i]);
+//                    }else{
+//                        rotatedata.datay += rotatedata.getridofJittery[i];
+//                    }
+//                }
+//                rotatedata.datax /= rotatedata.Jitter_coefficient;
+//                rotatedata.datay /= rotatedata.Jitter_coefficient;
+//                rotatedata.datax %= 360;
+//                rotatedata.datay %= 360;
+
+
+                //如果数组中最大值与最小值的差为钝角则出现临界问题，如果为锐角则
+                float maxnumx= 0;
+                float minnumx= 360;
+                float maxnumy= 0;
+                float minnumy= 360;
+                //找到最大值
+                for(int i = 0;i<rotatedata.Jitter_coefficient;i++){
+                    if(rotatedata.getridofJitterx[i] < minnumx)
+                         minnumx = rotatedata.getridofJitterx[i];
+                    if(rotatedata.getridofJittery[i] < minnumy)
+                        minnumy = rotatedata.getridofJittery[i];
+
+                    if(rotatedata.getridofJitterx[i] > maxnumx)
+                        maxnumx = rotatedata.getridofJitterx[i];
+                    if(rotatedata.getridofJittery[i] > maxnumy)
+                        maxnumy = rotatedata.getridofJittery[i];
                 }
 
+                for (int i = 0;i<rotatedata.Jitter_coefficient;i++){
+                    rotatedata.datax += rotatedata.getridofJitterx[i];
+                }
                 rotatedata.datax /= rotatedata.Jitter_coefficient;
-                rotatedata.datay /= rotatedata.Jitter_coefficient;
+                int countx = 0;
+                if(maxnumx - minnumx <= rotatedata.dupers){//正常求平均
+                }else {
+                    for (int i = 0;i<rotatedata.Jitter_coefficient;i++){
+                        if (rotatedata.datax > rotatedata.getridofJitterx[i]){
+                            countx++;
+                        }
+                    }
+                    rotatedata.datax += (360/rotatedata.Jitter_coefficient)*countx;
+                    rotatedata.datax %= 360;
+                }
 
-                rotatedata.datax %= 360;
-                rotatedata.datay %= 360;
+                for (int i = 0;i<rotatedata.Jitter_coefficient;i++){
+                    rotatedata.datay += rotatedata.getridofJittery[i];
+                }
+                rotatedata.datay /= rotatedata.Jitter_coefficient;
+                int county = 0;
+                if(maxnumy - minnumy <= rotatedata.dupers){
+                }else {
+                    for (int i = 0;i<rotatedata.Jitter_coefficient;i++){
+                        if (rotatedata.datay > rotatedata.getridofJittery[i]){
+                            county++;
+                        }
+                    }
+                    rotatedata.datay += (360/rotatedata.Jitter_coefficient)*county;
+                    rotatedata.datay %= 360;
+                }
 
 //                if( rotatedata.datax-rotatedata.getridofJitterx[0] >= 40 || rotatedata.getridofJitterx[0] - rotatedata.datax >= 40)
 //                {
@@ -323,7 +373,7 @@ public class rotate {
 
                 String ans = Float.toString(rotatedata.datax) + " " + Float.toString(rotatedata.datay);
 
-                System.out.println("ans:"+ans);
+//                System.out.println("ans:"+ans);
                 try {
                     sendMessage(ans);
                 } catch (IOException e) {
@@ -333,7 +383,6 @@ public class rotate {
                 rotatedata.datay = 0;
             }
         });
-
         server.start();
     }
 
@@ -390,8 +439,11 @@ public class rotate {
 
     @OnOpen
     public void onOpen(Session session) throws IOException, InterruptedException {
+
+
         this.session = session;
         System.out.println("session"+session);
+        System.out.println(session.getId());
         webSocketSet.add(this); //加入set中
         addOnlineCount(); //在线数加1
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
@@ -413,6 +465,7 @@ public class rotate {
         webSocketSet.remove(this); //从set中删除
         subOnlineCount(); //在线数减1
         System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
+        this.server.destroy();
     }
     /**
      * 收到客户端消息后调用的方法
@@ -450,7 +503,7 @@ public class rotate {
     public void sendMessage(String message) throws IOException {
 
         this.session.getBasicRemote().sendText(message);
-        System.out.println("成功发送数据："+message);
+//        System.out.println("成功发送数据："+message);
 //this.session.getAsyncRemote().sendText(message);
     }
 

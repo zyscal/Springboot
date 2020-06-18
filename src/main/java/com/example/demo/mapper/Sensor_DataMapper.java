@@ -13,6 +13,7 @@ import java.util.List;
 public interface Sensor_DataMapper {
     Sensor_Data findadata(@Param("sensor_name") String sensor_name);
     List<Sensor_Data> findalldata(@Param("table_name") String table_name);
+    List<Sensor_Data> findalldatabydate(@Param("table_name") String table_name,@Param("date") String date);
     boolean addSensorData(@Param("table_name") String table_name,@Param("sensor_data") float sensor_data);
     boolean createatable(@Param("table_name") String table_name);
 }
